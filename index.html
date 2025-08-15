@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Online Exam Tab Switching Detection</title>
+    <title>Protected Online Exam Simulation</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background: #f0f0f0;
             padding: 20px;
             text-align: center;
+            user-select: none; /* Disable text selection */
+            -webkit-user-select: none;
+            -moz-user-select: none;
         }
         button {
             padding: 10px 20px;
@@ -35,14 +38,35 @@
             margin: 5px 0;
             font-size: 14px;
         }
+        .question {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            width: 80%;
+            text-align: left;
+            border: 1px solid #ccc;
+            font-size: 18px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
     <h1>Online Exam Simulation</h1>
-    <p>Click "Start Test" to enter fullscreen mode.<br>
-       Switching tabs, minimizing, or exiting fullscreen will be detected.</p>
+    <p>Click "Start Test" to begin in fullscreen mode.<br>
+       Tab switching, text copying, and right-clicking are disabled.</p>
 
     <button onclick="startTest()">Start Test</button>
+
+    <div class="question" id="examQuestion">
+        <strong>Question 1:</strong> What is the output of the following code?<br><br>
+        <code>
+        let x = 5;<br>
+        let y = "5";<br>
+        console.log(x == y);<br>
+        console.log(x === y);
+        </code>
+    </div>
 
     <div class="log" id="log"></div>
 
@@ -59,9 +83,9 @@
         function startTest() {
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) { // Safari
+            } else if (document.documentElement.webkitRequestFullscreen) {
                 document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+            } else if (document.documentElement.msRequestFullscreen) {
                 document.documentElement.msRequestFullscreen();
             }
             logEvent("🟢 Test started - Fullscreen mode requested.");
@@ -83,6 +107,39 @@
                 logEvent("⚠️ Fullscreen exited (Possible cheating attempt)");
             } else {
                 logEvent("🖥 Fullscreen mode entered");
+            }
+        });
+
+        // Disable right-click
+        document.addEventListener("contextmenu", event => {
+            event.preventDefault();
+            logEvent("❌ Right-click blocked.");
+        });
+
+        // Disable copy/cut/paste
+        document.addEventListener("copy", event => {
+            event.preventDefault();
+            logEvent("❌ Copy action blocked.");
+        });
+        document.addEventListener("cut", event => {
+            event.preventDefault();
+            logEvent("❌ Cut action blocked.");
+        });
+        document.addEventListener("paste", event => {
+            event.preventDefault();
+            logEvent("❌ Paste action blocked.");
+        });
+
+        // Block common cheating keyboard shortcuts
+        document.addEventListener("keydown", function(event) {
+            if (event.ctrlKey && 
+                (event.key === "c" || event.key === "u" || event.key === "x" || event.key === "p" || event.key === "s")) {
+                event.preventDefault();
+                logEvent(`❌ Shortcut blocked: Ctrl+${event.key.toUpperCase()}`);
+            }
+            if (event.key === "PrintScreen") {
+                event.preventDefault();
+                logEvent("❌ Print Screen blocked.");
             }
         });
 
