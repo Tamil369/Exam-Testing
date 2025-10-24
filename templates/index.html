@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programming Competition System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2c3e50;
+            margin: 20px 0 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #login-section,
+        #exam-section,
+        #result-section,
+        #cancellation-section {
+            display: none;
+        }
+
+        #login-section.active,
+        #exam-section.active,
+        #result-section.active,
+        #cancellation-section.active {
+            display: block;
+        }
+
+        .warning {
+            background-color: #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fdcb6e;
+            color: #2d3436;
+        }
+
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .question h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .options {
+            margin-left: 20px;
+        }
+
+        .option {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .option input {
+            margin-right: 10px;
+        }
+
+        .option label {
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        #fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #fullscreen-overlay.active {
+            display: flex;
+        }
+
+        .tab-warning {
+            background-color: #ff7675;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .tab-warning.active {
+            display: block;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #3498db;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .time-taken {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #7f8c8d;
+        }
+
+        .cancellation-icon {
+            color: #e74c3c;
+            font-size: 64px;
+            margin: 20px 0;
+        }
+
+        .security-features {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            max-width: 800px;
+        }
+
+        .security-list {
+            list-style-type: none;
+            margin: 15px 0;
+        }
+
+        .security-list li {
+            margin-bottom: 10px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .security-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .warning-icon {
+            color: #fdcb6e;
+            margin-right: 10px;
+        }
+
+        .note-box {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid #fdcb6e;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Programming Competition System</h1>
+            <p>Test your knowledge in this timed competition</p>
+        </header>
+
+        <div class="card">
+            <div id="login-section" class="active">
+                <h2>Student Login</h2>
+                <div class="warning">
+                    <strong>Important:</strong> Please provide accurate information. You'll need to enter full-screen
+                    mode to start the exam.
+                </div>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg_number">Registration Number</label>
+                        <input type="text" id="reg_number" name="reg_number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <button type="submit">Start Exam</button>
+                </form>
+            </div>
+
+            <div id="exam-section">
+                <div class="tab-warning" id="tab-warning">
+                    <strong>Warning (0/2):</strong> Switching tabs is considered malpractice. 2 more violation(s) will
+                    result in exam cancellation.
+                </div>
+
+                <h2>Programming Questions</h2>
+                <p>You have 10 questions to solve. Select the correct answers.</p>
+
+                <div id="questions-container"></div>
+
+                <button id="submit-btn">Submit Answers</button>
+            </div>
+
+            <div id="result-section">
+                <div class="result-card">
+                    <h2>Exam Results</h2>
+                    <p>Thank you for completing the programming competition!</p>
+
+                    <div class="score">
+                        <span id="score-value">0</span>/<span id="total-value">10</span>
+                    </div>
+
+                    <div class="time-taken">
+                        Time taken: <span id="time-taken-value">0</span> seconds
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+
+                    <p id="result-message">Your answers have been recorded. Results will be finalized after review.</p>
+
+                    <button onclick="window.location.href='/admin'">View Leaderboard</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="cancellation-section">
+            <div class="card">
+                <div class="result-card">
+                    <h2>Exam Cancelled</h2>
+                    <div class="cancellation-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <p>Your exam has been cancelled due to multiple malpractice violations.</p>
+                    <p>You switched tabs or changed windows <strong id="violation-count">0</strong> times.</p>
+                    <p>Please contact the exam administrator for further instructions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fullscreen-overlay">
+        <div style="max-width: 800px;">
+            <h2>Exam Starting Soon</h2>
+            <p>The exam will begin in fullscreen mode. Please read the following instructions carefully:</p>
+
+            <div class="security-features">
+                <h3><i class="fas fa-shield-alt warning-icon"></i> Anti-Cheating Measures Enabled:</h3>
+                <ul class="security-list">
+                    <li>Fullscreen mode will be enforced</li>
+                    <li>Tab switching is monitored and limited to 1 attempts</li>
+                    <li>Right-click menu is disabled</li>
+                    <li>Developer tools (F12, Ctrl+Shift+I) are blocked</li>
+                    <li>Viewing page source (Ctrl+U) is disabled</li>
+                    <li>Copying text (Ctrl+C) is prevented</li>
+                    <li>Pasting text (Ctrl+V) is prevented</li>
+                    <li>Keyboard shortcuts for switching applications are monitored</li>
+                </ul>
+
+                <div class="note-box">
+                    <p><strong>Note:</strong> After  tab switching violations, your exam will be automatically
+                        cancelled.</p>
+                </div>
+
+                <p>The exam has a time limit of 20 minutes. Timer will start once you click "Start Exam Now".</p>
+            </div>
+
+            <button id="start-exam-btn">Start Exam Now</button>
+        </div>
+    </div>
+
+    <div class="timer" id="timer" style="display: none;">Time: 20:00</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // DOM elements
+            const loginSection = document.getElementById('login-section');
+            const examSection = document.getElementById('exam-section');
+            const resultSection = document.getElementById('result-section');
+            const cancellationSection = document.getElementById('cancellation-section');
+            const loginForm = document.getElementById('login-form');
+            const questionsContainer = document.getElementById('questions-container');
+            const submitBtn = document.getElementById('submit-btn');
+            const fullscreenOverlay = document.getElementById('fullscreen-overlay');
+            const startExamBtn = document.getElementById('start-exam-btn');
+            const tabWarning = document.getElementById('tab-warning');
+            const scoreValue = document.getElementById('score-value');
+            const totalValue = document.getElementById('total-value');
+            const progressBar = document.getElementById('progress-bar');
+            const resultMessage = document.getElementById('result-message');
+            const timer = document.getElementById('timer');
+            const timeTakenValue = document.getElementById('time-taken-value');
+            const violationCount = document.getElementById('violation-count');
+
+            let questions = [];
+            let answers = {};
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+
+            // Malpractice detection and handling
+            let malpracticeCount = 0;
+            let examCancelled = false;
+            const MAX_MALPRACTICE_ALLOWED = 2;
+
+            // Function to cancel the exam
+            function cancelExam() {
+                examCancelled = true;
+
+                // Hide exam section and show cancellation message
+                examSection.classList.remove('active');
+                cancellationSection.classList.add('active');
+
+                // Update violation count
+                violationCount.textContent = malpracticeCount;
+
+                // Clear the timer
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+
+                // Submit empty answers to record the cancellation
+                submitCancelledExam();
+            }
+
+            // Function to submit a cancelled exam
+            function submitCancelledExam() {
+                fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        answers: [],
+                        cancelled: true,
+                        malpractice_count: malpracticeCount
+                    })
+                })
+                    .catch(error => {
+                        console.error('Error submitting cancelled exam:', error);
+                    });
+            }
+
+            // Enhanced tab switching detection
+            let focusTime = Date.now();
+            let lastBlurTime = 0;
+
+            window.addEventListener('blur', function () {
+                if (examCancelled || !examSection.classList.contains('active')) return;
+
+                lastBlurTime = Date.now();
+                focusTime = lastBlurTime;
+
+                // Count this as malpractice
+                malpracticeCount++;
+
+                // Update warning message with count
+                tabWarning.innerHTML = `
+                    <strong>Warning (${malpracticeCount}/${MAX_MALPRACTICE_ALLOWED}):</strong> 
+                    Switching tabs is considered malpractice. 
+                    ${MAX_MALPRACTICE_ALLOWED - malpracticeCount} more violation(s) will result in exam cancellation.
+                `;
+
+                // Show warning immediately
+                tabWarning.classList.add('active');
+
+                // Cancel exam if maximum violations reached
+                if (malpracticeCount >= MAX_MALPRACTICE_ALLOWED) {
+                    cancelExam();
+                }
+            });
+
+            window.addEventListener('focus', function () {
+                if (examCancelled || !examSection.classList.contains('active')) return;
+
+                const blurTime = Date.now() - lastBlurTime;
+
+                // Only show warning if tab was switched for more than 1 second
+                if (blurTime > 1000 && malpracticeCount < MAX_MALPRACTICE_ALLOWED) {
+                    tabWarning.classList.add('active');
+
+                    // Auto-hide warning after 5 seconds
+                    setTimeout(() => {
+                        if (!examCancelled) {
+                            tabWarning.classList.remove('active');
+                        }
+                    }, 5000);
+                }
+            });
+
+            // Detect Alt+Tab, Win+Tab, and other switching methods
+            document.addEventListener('keydown', function (e) {
+                if (examCancelled || !examSection.classList.contains('active')) return;
+
+                // Detect Alt+Tab, Win+Tab, Ctrl+Tab, etc.
+                if ((e.altKey && e.key === 'Tab') ||
+                    (e.metaKey && e.key === 'Tab') ||
+                    (e.ctrlKey && e.key === 'Tab')) {
+
+                    // Count this as malpractice
+                    malpracticeCount++;
+
+                    // Show warning
+                    tabWarning.innerHTML = `
+                        <strong>Warning (${malpracticeCount}/${MAX_MALPRACTICE_ALLOWED}):</strong> 
+                        Switching tabs is considered malpractice. 
+                        ${MAX_MALPRACTICE_ALLOWED - malpracticeCount} more violation(s) will result in exam cancellation.
+                    `;
+                    tabWarning.classList.add('active');
+
+                    // Cancel exam if maximum violations reached
+                    if (malpracticeCount >= MAX_MALPRACTICE_ALLOWED) {
+                        cancelExam();
+                    } else {
+                        // Auto-hide warning after 5 seconds
+                        setTimeout(() => {
+                            if (!examCancelled) {
+                                tabWarning.classList.remove('active');
+                            }
+                        }, 5000);
+                    }
+                }
+            });
+
+            // Detect right-click and prevent it
+            document.addEventListener('contextmenu', function (e) {
+                if (examCancelled || !examSection.classList.contains('active')) return;
+
+                e.preventDefault();
+
+                // Count this as malpractice
+                malpracticeCount++;
+
+                // Show custom warning for right-click
+                const rightClickWarning = document.createElement('div');
+                rightClickWarning.className = 'tab-warning';
+                rightClickWarning.innerHTML = `
+                    <strong>Warning (${malpracticeCount}/${MAX_MALPRACTICE_ALLOWED}):</strong> 
+                    Right-click is disabled during the exam. 
+                    ${MAX_MALPRACTICE_ALLOWED - malpracticeCount} more violation(s) will result in exam cancellation.
+                `;
+
+                // Insert after the existing warning
+                tabWarning.parentNode.insertBefore(rightClickWarning, tabWarning.nextSibling);
+
+                // Auto-hide warning after 5 seconds
+                setTimeout(() => {
+                    if (!examCancelled) {
+                        rightClickWarning.remove();
+                    }
+                }, 5000);
+
+                // Cancel exam if maximum violations reached
+                if (malpracticeCount >= MAX_MALPRACTICE_ALLOWED) {
+                    cancelExam();
+                }
+
+                return false;
+            });
+
+            // Detect developer tools opening (F12, Ctrl+Shift+I, etc.)
+            document.addEventListener('keydown', function (e) {
+                if (examCancelled || !examSection.classList.contains('active')) return;
+
+                // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+                if (e.key === 'F12' ||
+                    (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                    (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                    (e.ctrlKey && e.key === 'U')) {
+
+                    e.preventDefault();
+
+                    // Count this as malpractice
+                    malpracticeCount++;
+
+                    // Show warning
+                    tabWarning.innerHTML = `
+                        <strong>Warning (${malpracticeCount}/${MAX_MALPRACTICE_ALLOWED}):</strong> 
+                        Developer tools are disabled during the exam. 
+                        ${MAX_MALPRACTICE_ALLOWED - malpracticeCount} more violation(s) will result in exam cancellation.
+                    `;
+                    tabWarning.classList.add('active');
+
+                    // Cancel exam if maximum violations reached
+                    if (malpracticeCount >= MAX_MALPRACTICE_ALLOWED) {
+                        cancelExam();
+                    } else {
+                        // Auto-hide warning after 5 seconds
+                        setTimeout(() => {
+                            if (!examCancelled) {
+                                tabWarning.classList.remove('active');
+                            }
+                        }, 5000);
+                    }
+
+                    return false;
+                }
+            });
+
+            // Prevent copying text
+            document.addEventListener('copy', function (e) {
+                if (examCancelled || !examSection.classList.contains('active')) return;
+                e.preventDefault();
+
+                // Count this as malpractice
+                malpracticeCount++;
+
+                // Show warning
+                tabWarning.innerHTML = `
+                    <strong>Warning (${malpracticeCount}/${MAX_MALPRACTICE_ALLOWED}):</strong> 
+                    Copying is disabled during the exam. 
+                    ${MAX_MALPRACTICE_ALLOWED - malpracticeCount} more violation(s) will result in exam cancellation.
+                `;
+                tabWarning.classList.add('active');
+
+                // Cancel exam if maximum violations reached
+                if (malpracticeCount >= MAX_MALPRACTICE_ALLOWED) {
+                    cancelExam();
+                } else {
+                    // Auto-hide warning after 5 seconds
+                    setTimeout(() => {
+                        if (!examCancelled) {
+                            tabWarning.classList.remove('active');
+                        }
+                    }, 5000);
+                }
+
+                return false;
+            });
+
+            // Prevent pasting text
+            document.addEventListener('paste', function (e) {
+                if (examCancelled || !examSection.classList.contains('active')) return;
+                e.preventDefault();
+
+                // Count this as malpractice
+                malpracticeCount++;
+
+                // Show warning
+                tabWarning.innerHTML = `
+                    <strong>Warning (${malpracticeCount}/${MAX_MALPRACTICE_ALLOWED}):</strong> 
+                    Pasting is disabled during the exam. 
+                    ${MAX_MALPRACTICE_ALLOWED - malpracticeCount} more violation(s) will result in exam cancellation.
+                `;
+                tabWarning.classList.add('active');
+
+                // Cancel exam if maximum violations reached
+                if (malpracticeCount >= MAX_MALPRACTICE_ALLOWED) {
+                    cancelExam();
+                } else {
+                    // Auto-hide warning after 5 seconds
+                    setTimeout(() => {
+                        if (!examCancelled) {
+                            tabWarning.classList.remove('active');
+                        }
+                    }, 5000);
+                }
+
+                return false;
+            });
+
+            // Login form submission
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const regNumber = document.getElementById('reg_number').value;
+                const email = document.getElementById('email').value;
+
+                // Send login request
+                fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, reg_number: regNumber, email })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show fullscreen overlay
+                            fullscreenOverlay.classList.add('active');
+                            fetch('/get_questions')
+                                .then(response => response.json())
+                                .then(data => {
+                                    questions = data.questions;
+
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('Failed to load questions. Please refresh the page.');
+                                });
+                        } else {
+                            alert('Login failed. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+            });
+
+            // Start exam button
+            startExamBtn.addEventListener('click', function () {
+                // Request fullscreen
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+
+                // Hide overlay and show exam section
+                fullscreenOverlay.classList.remove('active');
+                loginSection.classList.remove('active');
+                examSection.classList.add('active');
+
+                // Show timer
+                timer.style.display = 'block';
+                startTimer();
+
+                // Load questions
+                loadQuestions();
+            });
+
+            // Start timer function
+            function startTimer() {
+                timerInterval = setInterval(function () {
+                    timeLeft--;
+
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+
+                    timer.textContent = `Time: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        submitAnswers();
+                    }
+                }, 1000);
+            }
+
+            // Load questions from server
+            function loadQuestions() {
+                displayQuestions(questions);
+                
+            }
+
+            // Display questions
+            function displayQuestions(questions) {
+                questionsContainer.innerHTML = '';
+
+                questions.forEach((q, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'question';
+
+                    let optionsHTML = '';
+
+                    if (q.type === 'mcq') {
+                        // Single choice options
+                        q.options.forEach((option, optIndex) => {
+                            optionsHTML += `
+                                <div class="option">
+                                    <input type="radio" id="q${q.id}_opt${optIndex}" name="q${q.id}" value="${optIndex}" onchange="saveAnswer(${q.id}, ${optIndex}, 'mcq')">
+                                    <label for="q${q.id}_opt${optIndex}">${option}</label>
+                                </div>
+                            `;
+                        });
+                    } else if (q.type === 'msq') {
+                        // Multiple choice options
+                        q.options.forEach((option, optIndex) => {
+                            optionsHTML += `
+                                <div class="option">
+                                    <input type="checkbox" id="q${q.id}_opt${optIndex}" name="q${q.id}" value="${optIndex}" onchange="saveAnswerMSQ(${q.id}, ${optIndex})">
+                                    <label for="q${q.id}_opt${optIndex}">${option}</label>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    questionDiv.innerHTML = `
+                        <h3>Question ${index + 1}</h3>
+                        <p>${q.question}</p>
+                        <div class="options">
+                            ${optionsHTML}
+                        </div>
+                    `;
+
+                    questionsContainer.appendChild(questionDiv);
+                });
+            }
+
+            // Save answer for MCQ
+            window.saveAnswer = function (questionId, answerIndex, type) {
+                answers[questionId] = {
+                    type: type,
+                    answer: answerIndex
+                };
+            };
+
+            // Save answer for MSQ
+            window.saveAnswerMSQ = function (questionId, answerIndex) {
+                if (!answers[questionId]) {
+                    answers[questionId] = {
+                        type: 'msq',
+                        answers: []
+                    };
+                }
+
+                const checkbox = document.getElementById(`q${questionId}_opt${answerIndex}`);
+
+                if (checkbox.checked) {
+                    // Add to answers if checked
+                    if (!answers[questionId].answers.includes(answerIndex)) {
+                        answers[questionId].answers.push(answerIndex);
+                    }
+                } else {
+                    // Remove from answers if unchecked
+                    const index = answers[questionId].answers.indexOf(answerIndex);
+                    if (index > -1) {
+                        answers[questionId].answers.splice(index, 1);
+                    }
+                }
+            };
+
+            // Submit answers
+            submitBtn.addEventListener('click', function () {
+                submitAnswers();
+            });
+
+            function submitAnswers() {
+                clearInterval(timerInterval);
+
+                // Prepare answers for submission
+                const answerData = [];
+
+                for (const [questionId, answer] of Object.entries(answers)) {
+                    answerData.push({
+                        question_id: parseInt(questionId),
+                        ...answer
+                    });
+                }
+
+                // Submit to server
+                fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ answers: answerData })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show results
+                            examSection.classList.remove('active');
+                            resultSection.classList.add('active');
+
+                            scoreValue.textContent = data.score;
+                            totalValue.textContent = data.total;
+                            timeTakenValue.textContent = data.time_taken.toFixed(2);
+
+                            // Update progress bar
+                            const percentage = (data.score / data.total) * 100;
+                            progressBar.style.width = `${percentage}%`;
+
+                            // Custom message based on score
+                            if (data.score === data.total) {
+                                resultMessage.textContent = "Perfect score! Excellent job!";
+                            } else if (data.score >= data.total * 0.7) {
+                                resultMessage.textContent = "Great job! You scored well above average.";
+                            } else if (data.score >= data.total * 0.5) {
+                                resultMessage.textContent = "Good effort! You passed the exam.";
+                            } else {
+                                resultMessage.textContent = "Keep studying and try again. You can do better!";
+                            }
+                        } else {
+                            alert('Submission failed. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred during submission. Please try again.');
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>

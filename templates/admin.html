@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Programming Competition</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background-color: #2980b9;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e8f4fc;
+        }
+
+        .highlight {
+            background-color: #fff8e1 !important;
+        }
+
+        .medal {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .gold {
+            background-color: #ffd700;
+            color: #333;
+        }
+
+        .silver {
+            background-color: #c0c0c0;
+            color: #333;
+        }
+
+        .bronze {
+            background-color: #cd7f32;
+            color: white;
+        }
+
+        .time-taken {
+            font-family: monospace;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            margin: 0 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .cancelled {
+            background-color: #ffebee !important;
+            color: #c62828;
+        }
+
+        .cancelled td {
+            color: #c62828;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Programming Competition System</h1>
+            <p>Admin Panel - Results Overview</p>
+        </header>
+
+        <button class="refresh-btn" onclick="location.reload()">Refresh Results</button>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Participants</h3>
+                <div class="stat-value" id="total-participants">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Score</h3>
+                <div class="stat-value" id="average-score">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Best Time</h3>
+                <div class="stat-value" id="best-time">0s</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Competition Results</h2>
+            <p>Sorted by score (highest first) and time taken (lowest first)</p>
+
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Registration Number</th>
+                        <th>Score</th>
+                        <th>Time Taken</th>
+                        <th>Status</th>
+                        <th>Submission Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr class="{% if result.cancelled %}cancelled{% endif %}">
+                        <td>
+                            {% if loop.index == 1 and not result.cancelled %}
+                            <span class="medal gold">1</span>
+                            {% elif loop.index == 2 and not result.cancelled %}
+                            <span class="medal silver">2</span>
+                            {% elif loop.index == 3 and not result.cancelled %}
+                            <span class="medal bronze">3</span>
+                            {% else %}
+                            {{ loop.index }}
+                            {% endif %}
+                        </td>
+                        <td>{{ result.name }}</td>
+                        <td>{{ result.reg_number }}</td>
+                        <td><strong>{{ result.score }}/{{ result.total }}</strong></td>
+                        <td class="time-taken">{{ "%.2f"|format(result.time_taken) }}s</td>
+                        <td>
+                            {% if result.cancelled %}
+                            <span style="color: #c62828; font-weight: bold;">Cancelled ({{ result.malpractice_count }}
+                                violations)</span>
+                            {% else %}
+                            <span style="color: #2e7d32; font-weight: bold;">Completed</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ result.submission_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Calculate statistics
+            const results = {{ results| tojson
+        }};
+        const validResults = results.filter(result => !result.cancelled);
+
+        // Total participants
+        document.getElementById('total-participants').textContent = results.length;
+
+        // Average score (only for non-cancelled exams)
+        if (validResults.length > 0) {
+            const totalScore = validResults.reduce((sum, result) => sum + result.score, 0);
+            const averageScore = totalScore / validResults.length;
+            document.getElementById('average-score').textContent = averageScore.toFixed(1);
+
+            // Best time (only for non-cancelled exams)
+            const bestTime = Math.min(...validResults.map(result => result.time_taken));
+            document.getElementById('best-time').textContent = bestTime.toFixed(2) + 's';
+        }
+
+        // Highlight top 3 participants (only non-cancelled)
+        const rows = document.querySelectorAll('#results-table tbody tr:not(.cancelled)');
+        for (let i = 0; i < Math.min(3, rows.length); i++) {
+            rows[i].classList.add('highlight');
+        }
+        });
+    </script>
+</body>
+
+</html>
